@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  app1:
+    build: ./app
+    container_name: app1
+    networks:
+      - haproxynet
+    environment:
+      - SERVER_NAME=app1
+
+  app2:
+    build: ./app
+    container_name: app2
+    networks:
+      - haproxynet
+    environment:
+      - SERVER_NAME=app2
+
+  app3:
+    build: ./app
+    container_name: app3
+    networks:
+      - haproxynet
+    environment:
+      - SERVER_NAME=app3
+
+  haproxy:
+    image: haproxytech/haproxy-alpine:2.4
+    container_name: haproxy
+    networks:
+      - haproxynet
+    volumes:
+      - "./haproxy:/usr/local/etc/haproxy:ro"
+    ports:
+      - "3000:3000"
+      - "8404:8404"
+    depends_on:
+      - app1
+      - app2
+      - app3
+
+networks:
+  haproxynet:
+    driver: bridge
